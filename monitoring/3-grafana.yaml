@@ -1,0 +1,7 @@
+config map
+persistent storage (use stateful sets)
+secrets?
+actual deployment
+  1 container
+  service definition
+  ingress

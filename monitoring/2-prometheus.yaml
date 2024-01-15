@@ -1,0 +1,6 @@
+prometheus:
+  config map
+  persistent storage (use stateful sets)
+  actual deployment
+    1 container
+    service definition

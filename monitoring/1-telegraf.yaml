@@ -1,0 +1,5 @@
+telegraf:
+  config map
+  secrets
+  1 container
+
