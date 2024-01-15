@@ -1,7 +1,4 @@
 ---
-secrets
-
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,8 +8,8 @@ data:
     [[inputs.vsphere]]
       interval = "20s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
-      username = ""
-      password = ""
+      username = $VSPHERE_USER
+      password = $VSPHERE_PASSWORD
 
       insecure_skip_verify = true
       force_discover_on_init = true
@@ -31,14 +28,14 @@ data:
       interval = "300s"
 
       vcenters = [ "https://vcsa.homelab/sdk" ]
-      username = ""
-      password = ""
+      username = $VSPHERE_USER
+      password = $VSPHERE_PASSWORD
 
       insecure_skip_verify = true
       force_discover_on_init = true
 
-      host_metric_exclude = ["*"] # Exclude realtime metrics
-      vm_metric_exclude = ["*"] # Exclude realtime metrics
+      host_metric_exclude = ["*"]
+      vm_metric_exclude = ["*"]
 
       max_query_metrics = 256
       collect_concurrency = 1
@@ -50,6 +47,52 @@ data:
       ## Export metric collection time.
       # export_timestamp = false
 
+# deploy the container itself
 ---
-# app deployment
-config filepath: /etc/telegraf/telegraf.conf
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf-deployment
+  labels:
+    app: telegraf
+spec:
+  containers:
+    - image: telegraf:latest
+      name: telegraf
+      ports:
+        - containerPort: 
+      volumeMounts:
+        - mountPath: /etc/telegraf/telegraf.conf
+          name: telegraf-config-map
+      envFrom:
+        - secretRef:
+            name: telegraf-secrets
+  volumes:
+    - name: telegraf-config-map
+      configMap:
+        name: telegraf-config-map
+  env:
+    - name: VSPHERE_USER
+      valueFrom:
+        secretKeyRef:
+          name: telegraf-secrets
+          key: username.txt
+    - name: VSPHERE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: telegraf-secrets
+          key: password.txt
+
+#expose a service in k8s so Prometheus can reach Telegraf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegraf-service
+spec:
+  selector:
+    app: telegraf
+  ports:
+    - protocol: TCP
+      port: 9273
+      targetPort: 9273
