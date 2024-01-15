@@ -64,24 +64,21 @@ spec:
       volumeMounts:
         - mountPath: /etc/telegraf/telegraf.conf
           name: telegraf-config-map
-      envFrom:
-        - secretRef:
-            name: telegraf-secrets
-  volumes:
-    - name: telegraf-config-map
-      configMap:
-        name: telegraf-config-map
-  env:
-    - name: VSPHERE_USER
-      valueFrom:
-        secretKeyRef:
-          name: telegraf-secrets
-          key: username.txt
-    - name: VSPHERE_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: telegraf-secrets
-          key: password.txt
+      volumes:
+        - name: telegraf-config-map
+          configMap:
+            name: telegraf-config-map
+      env:
+        - name: VSPHERE_USER
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: username.txt
+        - name: VSPHERE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: password.txt
 
 #expose a service in k8s so Prometheus can reach Telegraf
 ---
