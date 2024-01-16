@@ -5,12 +5,12 @@ metadata:
   namespace: homelab-monitoring
   name: telegraf-config-map
 data:
-  telegraf.conf: |
+  telegraf.conf: |+
     [[inputs.vsphere]]
       interval = "20s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
-      username = $VSPHERE_USER
-      password = $VSPHERE_PASSWORD
+      username = "$VSPHERE_USER"
+      password = "$VSPHERE_PASSWORD"
 
       insecure_skip_verify = true
       force_discover_on_init = true
@@ -29,8 +29,8 @@ data:
       interval = "300s"
 
       vcenters = [ "https://vcsa.homelab/sdk" ]
-      username = $VSPHERE_USER
-      password = $VSPHERE_PASSWORD
+      username = "$VSPHERE_USER"
+      password = "$VSPHERE_PASSWORD"
 
       insecure_skip_verify = true
       force_discover_on_init = true
