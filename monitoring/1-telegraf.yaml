@@ -71,6 +71,8 @@ spec:
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
               name: telegraf-config-map
+              subPath: telegraf.conf
+              readOnly: true
           env:
             - name: VSPHERE_USER
               valueFrom:
