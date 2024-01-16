@@ -2,6 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: homelab-monitoring
   name: telegraf-config-map
 data:
   telegraf.conf: |
