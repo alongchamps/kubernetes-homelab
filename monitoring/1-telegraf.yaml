@@ -52,21 +52,21 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: telegraf-deployment
-  labels:
-    app: telegraf
+  namespace: homelab-monitoring
+  name: telegraf
 spec:
+  selector:
+    matchLabels:
+      app: telegraf
+  minReadySeconds: 5
   template:
+    metadata:
+      labels:
+        app: telegraf
     spec:
-      volumes:
-        - name: telegraf-config-map
-          configMap:
-            name: telegraf-config-map
       containers:
         - image: telegraf:latest
           name: telegraf
-          ports:
-            - containerPort: 
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.conf
               name: telegraf-config-map
