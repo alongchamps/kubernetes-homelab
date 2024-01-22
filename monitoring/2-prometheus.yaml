@@ -38,9 +38,16 @@ spec:
           image: prom/prometheus
           args:
             - "--storage.tsdb.retention.time=7d"
+            - "--config.file=/etc/prometheus/prometheus.yml"
           ports:
             - containerPort: 9090
-# todo: config map
+          volumeMounts:
+          - name: prom-config-volume
+            mountPath: /etc/prometheus/prometheus.yml
+      volumes:
+        - name: prom-config-volume
+          configMap:
+            name: prometheus-config-map
 # todo: add volume mount for data persistence
 
 ---
