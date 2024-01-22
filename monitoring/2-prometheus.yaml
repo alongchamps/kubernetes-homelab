@@ -5,7 +5,7 @@ metadata:
   name: prometheus-config-map
   namespace: homelab-monitoring
 data:
-  prometheus.yml: |
+  homelab.yml: |
     global:
       scrape_interval:     15s
       evaluation_interval: 15s
@@ -38,7 +38,7 @@ spec:
           image: prom/prometheus
           args:
             - "--storage.tsdb.retention.time=7d"
-            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--config.file=/etc/prometheus/homelab.yml"
           ports:
             - containerPort: 9090
           volumeMounts:
