@@ -1,6 +1,62 @@
-prometheus:
-  config map
-  persistent storage (use stateful sets)
-  actual deployment
-    1 container
-    service definition
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config-map
+  namespace: homelab-monitoring
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+    scrape_configs:
+      - job_name: 'telegraf'
+        static_configs:
+        - targets: ['telegraf-service:9273']
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: homelab-monitoring
+  labels:
+    k8s-app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: prometheus
+  template:
+    metadata:
+      name: prometheus
+      labels:
+        k8s-app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          securityContext:
+            privileged: false
+
+# ---
+# service 
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: prom-httproute
+spec:
+  parentRefs:
+  - name: prom-gateway
+  hostnames:
+  - "prom.kubes.homelab"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: prom-ingress
+      port: 9090
