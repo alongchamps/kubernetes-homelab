@@ -36,47 +36,38 @@ spec:
       containers:
         - name: prometheus
           image: prom/prometheus
-          securityContext:
-            privileged: false
-
-# ---
-# service 
-
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
-metadata:
-  name: prom-gateway-class
-spec:
-  controllerName: prom.kubes.homelab/prom-gateway
+          args:
+            - "--storage.tsdb.retention.time=7d"
+          ports:
+            - containerPort: 9090
+# todo: config map
+# todo: add volume mount for data persistence
 
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
+apiVersion: v1
+kind: Service
 metadata:
-  name: prom-gateway
+  name: prom-service
+  namespace: homelab-monitoring
 spec:
-  gatewayClassName: prom-gateway-class
-  listeners:
-  - name: https
-    protocol: HTTPS
-    port: 443
+  selector:
+    app.kubernetes.io/name: prometheus
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 9090
 
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+apiVersion: v1
+kind: Ingress
 metadata:
-  name: prom-httproute
+  name: prom-ingress
+  namespace: homelab-monitoring
 spec:
-  parentRefs:
-  - name: prom-gateway
-  hostnames:
-  - "prom.kubes.homelab"
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: prom-ingress
-      port: 9090
+    - host: prom.kubes.homelab
+      http:
+        paths:
+        - backend:
+          serviceName: prom-service
+          servicePort: 9090
