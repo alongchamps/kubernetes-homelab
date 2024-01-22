@@ -92,9 +92,6 @@ spec:
   - "prom.kubes.homelab"
   rules:
   - matches:
-    - path:
-        type: PathPrefix
-        value: /
     backendRefs:
     - name: prom-service
       port: 9090
