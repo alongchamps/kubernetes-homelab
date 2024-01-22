@@ -44,6 +44,26 @@ spec:
 
 ---
 apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: prom-gateway-class
+spec:
+  controllerName: prom.kubes.homelab/prom-gateway
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: prom-gateway
+spec:
+  gatewayClassName: prom-gateway-class
+  listeners:
+  - name: https
+    protocol: HTTPS
+    port: 443
+
+---
+apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: prom-httproute
