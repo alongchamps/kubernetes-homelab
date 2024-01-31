@@ -69,6 +69,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: prom-ingress
+  namespace: homelab-monitoring
 spec:
   rules:
   - host: prom.kubes.homelab
