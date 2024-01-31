@@ -65,40 +65,55 @@ spec:
       targetPort: 9090
 
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: GatewayClass
+apiVersion: extensions/v1beta1
+kind: Ingress
 metadata:
-  name: prom-class
-  namespace: homelab-monitoring
+  name: prom-ingress
 spec:
-  controllerName: prom.kubes.homelab/gateway-controller
-
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: prom-gateway
-  namespace: homelab-monitoring
-spec:
-  gatewayClassName: prom-class
-  listeners:
-  - name: http
-    protocol: HTTP
-    port: 443
-
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
-  name: prom-httproute
-  namespace: homelab-monitoring
-spec:
-  parentRefs:
-  - name: prom-gateway
-  hostnames:
-  - "prom.kubes.homelab"
   rules:
-  - matches:
-    backendRefs:
-    - name: prom-service
-      port: 9090
+  - host: prom.kubes.homelab
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prom-service
+          servicePort: 443
+
+# ---
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: GatewayClass
+# metadata:
+#   name: prom-class
+#   namespace: homelab-monitoring
+# spec:
+#   controllerName: prom.kubes.homelab/gateway-controller
+
+# ---
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: Gateway
+# metadata:
+#   name: prom-gateway
+#   namespace: homelab-monitoring
+# spec:
+#   gatewayClassName: prom-class
+#   listeners:
+#   - name: http
+#     protocol: HTTP
+#     port: 443
+
+# ---
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: HTTPRoute
+# metadata:
+#   name: prom-httproute
+#   namespace: homelab-monitoring
+# spec:
+#   parentRefs:
+#   - name: prom-gateway
+#   hostnames:
+#   - "prom.kubes.homelab"
+#   rules:
+#   - matches:
+#     backendRefs:
+#     - name: prom-service
+#       port: 9090
