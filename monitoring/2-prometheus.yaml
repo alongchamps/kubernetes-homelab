@@ -59,11 +59,16 @@ spec:
             - "--config.file=/etc/prometheus/homelab.yml"
           ports:
             - containerPort: 9090
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            runAsGroup: 65534
+            fsGroup: 2000
           volumeMounts:
             - name: prom-config-volume
-              mountPath: /etc/prometheus/
+              mountPath: /etc/prometheus
             - name: prom-pv-volume
-              mountPath: /data/
+              mountPath: /data
       volumes:
         - name: prom-config-volume
           configMap:
