@@ -21,6 +21,7 @@ metadata:
   name: prom-pv-volume
   namespace: homelab-monitoring
 spec:
+  storageClassName: "local-storage"
   capacity:
     storage: 1Gi
   accessModes:
