@@ -16,7 +16,7 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: homelab-monitoring
@@ -37,17 +37,28 @@ spec:
         - name: prometheus
           image: prom/prometheus
           args:
-            - "--storage.tsdb.retention.time=7d"
+            - "--storage.tsdb.retention.time=2d"
+            - "--storage.tsdb.path=/data"
             - "--config.file=/etc/prometheus/homelab.yml"
           ports:
             - containerPort: 9090
           volumeMounts:
           - name: prom-config-volume
             mountPath: /etc/prometheus/
+          - name: prom-pv-volume
+            mountPath: /data/
       volumes:
         - name: prom-config-volume
           configMap:
             name: prometheus-config-map
+  volumeClaimTemplates:
+  - metadata:
+      name: prom-pv-volume
+    spec:
+      resources:
+        requests:
+          storage: 1Gi
+
 # todo: add volume mount for data persistence
 
 ---
