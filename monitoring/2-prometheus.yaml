@@ -50,6 +50,13 @@ spec:
       labels:
         app.kubernetes.io/name: prometheus
     spec:
+      initContainers:
+        - name: prometheus-data-permission-fix
+          image: busybox
+          command: ["/bin/chmod","-R","777", "/data"]
+          volumeMounts:
+          - name: prom-pv-volume
+            mountPath: /data
       containers:
         - name: prometheus
           image: prom/prometheus
@@ -59,10 +66,9 @@ spec:
             - "--config.file=/etc/prometheus/homelab.yml"
           ports:
             - containerPort: 9090
-          securityContext:
-            runAsUser: 1000
-            runAsNonRoot: true
-            runAsGroup: 65534
+          # securityContext:
+          #   runAsUser: 0
+          #   runAsRoot: true
           volumeMounts:
             - name: prom-config-volume
               mountPath: /etc/prometheus
