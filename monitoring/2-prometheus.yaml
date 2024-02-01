@@ -24,7 +24,8 @@ metadata:
     app.kubernetes.io/name: prometheus
 spec:
   replicas: 1
-  updateStrategy: RollingUpdate
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: prometheus
