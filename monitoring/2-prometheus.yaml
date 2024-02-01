@@ -21,17 +21,17 @@ metadata:
   name: prometheus
   namespace: homelab-monitoring
   labels:
-    k8s-app: prometheus
+    app.kubernetes.io/name: prometheus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8s-app: prometheus
+      app.kubernetes.io/name: prometheus
   template:
     metadata:
       name: prometheus
       labels:
-        k8s-app: prometheus
+        app.kubernetes.io/name: prometheus
     spec:
       containers:
         - name: prometheus
@@ -58,14 +58,15 @@ metadata:
   namespace: homelab-monitoring
 spec:
   selector:
-    k8s-app: prometheus
+    app.kubernetes.io/name: prometheus
+  type: NodePort
   ports:
     - protocol: TCP
       port: 443
       targetPort: 9090
 
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: prom-ingress
@@ -75,13 +76,10 @@ spec:
   - host: prom.kubes.homelab
     http:
       paths:
-      - pathType: Prefix
-        path: /
+      - path: /
         backend:
-          service:
-            name: prom-service
-            port:
-              number: 443
+          serviceName: prom-service
+          servicePort: 443
 
 # ---
 # apiVersion: gateway.networking.k8s.io/v1
