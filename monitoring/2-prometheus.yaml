@@ -66,20 +66,21 @@ spec:
       targetPort: 9090
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: prom-ingress
-  namespace: homelab-monitoring
 spec:
   rules:
-  - host: prom.kubes.homelab
-    http:
+  - http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: prom-service
-          servicePort: 443
+          service:
+            name: prom-service
+            port:
+              number: 443
 
 # ---
 # apiVersion: gateway.networking.k8s.io/v1
