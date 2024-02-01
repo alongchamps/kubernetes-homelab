@@ -45,8 +45,10 @@ data:
       listen = ":9273"    
       expiration_interval = "60s"
 
+      metric_buffer_limit = 1000
+
       ## Export metric collection time.
-      # export_timestamp = false
+      export_timestamp = false
 
 # deploy the container itself
 ---
