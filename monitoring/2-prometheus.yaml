@@ -61,14 +61,11 @@ spec:
         - name: prometheus
           image: prom/prometheus
           args:
-            - "--storage.tsdb.retention.time=2d"
             - "--storage.tsdb.path=/data"
+            - "--storage.tsdb.retention.size=900MB"
             - "--config.file=/etc/prometheus/homelab.yml"
           ports:
             - containerPort: 9090
-          # securityContext:
-          #   runAsUser: 0
-          #   runAsRoot: true
           volumeMounts:
             - name: prom-config-volume
               mountPath: /etc/prometheus
