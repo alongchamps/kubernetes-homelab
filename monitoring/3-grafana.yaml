@@ -22,7 +22,7 @@ metadata:
   namespace: homelab-monitoring
 spec:
   capacity:
-    storage: 1Gi
+    storage: 10Gi
   storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
