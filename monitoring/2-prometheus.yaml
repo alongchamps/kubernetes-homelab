@@ -107,7 +107,8 @@ metadata:
   name: prom-ingress
 spec:
   rules:
-  - http:
+  - host: prom.kubes.homelab
+    http:
       paths:
       - path: /
         pathType: Prefix
