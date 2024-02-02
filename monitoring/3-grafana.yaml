@@ -12,7 +12,8 @@ data:
     level = info
 
     [security]
-    admin_password = $GRAFANA_ADMIN_PW
+    admin_user = admin
+    admin_password = $GF_SECURITY_ADMIN_PASSWORD
 
 ---
 apiVersion: v1
@@ -65,7 +66,7 @@ spec:
             - name: grafana-pv-volume
               mountPath: /var/lib/grafana
           env:
-          - name: GRAFANA_ADMIN_PW
+          - name: GF_SECURITY_ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: s-grafana-admin
