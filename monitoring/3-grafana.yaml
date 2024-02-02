@@ -51,9 +51,9 @@ spec:
         app.kubernetes.io/name: grafana
     spec:
       securityContext:
-      fsGroup: 472
-      supplementalGroups:
-        - 0
+        fsGroup: 472
+        supplementalGroups:
+          - 0
       containers:
         - name: grafana
           image: grafana/grafana:latest
