@@ -61,12 +61,12 @@ spec:
               mountPath: /etc/grafana
             - name: grafana-pv-volume
               mountPath: /var/lib/grafana
-          # env:
-          # - name: GF_SECURITY_ADMIN_PASSWORD
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: s-grafana-admin
-          #       key: s-grafana-admin-pw
+          env:
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: s-grafana-admin
+                key: s-grafana-admin-pw
       volumes:
         - name: grafana-config-volume
           configMap:
