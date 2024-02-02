@@ -5,15 +5,11 @@ metadata:
   name: grafana-config-map
   namespace: homelab-monitoring
 data:
-  grafana.ini: |
+  grafana.ini: |+
     [log]
     ; # Either "debug", "info", "warn", "error", "critical", default is "info"
     ; # we change from info to debug level
     level = info
-
-    [security]
-    admin_user = admin
-    admin_password = $GF_SECURITY_ADMIN_PASSWORD
 
 ---
 apiVersion: v1
