@@ -7,13 +7,11 @@ metadata:
 data:
   telegraf.conf: |+
     [[inputs.vsphere]]
-      interval = "15s"
+      interval = "60s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
+      insecure_skip_verify = true
       username = "$VSPHERE_USER"
       password = "$VSPHERE_PASSWORD"
-
-      insecure_skip_verify = true
-      force_discover_on_init = true
 
       max_query_metrics = 256
       collect_concurrency = 1
