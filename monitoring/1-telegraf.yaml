@@ -7,7 +7,7 @@ metadata:
 data:
   telegraf.conf: |+
     [[inputs.vsphere]]
-      interval = "30s"
+      interval = "15s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
       username = "$VSPHERE_USER"
       password = "$VSPHERE_PASSWORD"
@@ -25,23 +25,6 @@ data:
       cluster_metric_exclude = ["*"]
       datastore_metric_exclude = ["*"]
       datacenter_metric_exclude = ["*"]
-    
-    [[inputs.vsphere]]
-      interval = "300s"
-
-      vcenters = [ "https://vcsa.homelab/sdk" ]
-      username = "$VSPHERE_USER"
-      password = "$VSPHERE_PASSWORD"
-
-      insecure_skip_verify = true
-      force_discover_on_init = true
-
-      host_metric_exclude = ["*"]
-      vm_metric_exclude = ["*"]
-
-      max_query_metrics = 256
-      collect_concurrency = 1
-      discover_concurrency = 1
 
     [[outputs.prometheus_client]]
       listen = ":9273"    
