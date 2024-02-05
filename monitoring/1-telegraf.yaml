@@ -44,12 +44,12 @@ data:
 
     [[outputs.prometheus_client]]
       listen = ":9273"    
-      expiration_interval = "60s"
+      # expiration_interval = "120s"
 
-      metric_buffer_limit = 10000
+      metric_buffer_limit = 1000
 
       ## Export metric collection time.
-      export_timestamp = false
+      export_timestamp = true
 
 # deploy the container itself
 ---
