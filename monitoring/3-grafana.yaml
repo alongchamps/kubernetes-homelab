@@ -67,6 +67,7 @@ spec:
               secretKeyRef:
                 name: s-grafana-admin
                 key: s-grafana-admin-pw
+                # this wasn't actually working as expected to set the grafana admin password
       volumes:
         - name: grafana-config-volume
           configMap:
