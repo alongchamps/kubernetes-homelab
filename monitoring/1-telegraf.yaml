@@ -24,6 +24,24 @@ data:
       datastore_metric_exclude = ["*"]
       datacenter_metric_exclude = ["*"]
 
+    [[inputs.vsphere]]
+      interval = "300s"
+      vcenters = [ "https://vcsa.homelab/sdk" ]
+      insecure_skip_verify = true
+      username = "$VSPHERE_USER"
+      password = "$VSPHERE_PASSWORD"
+
+      max_query_metrics = 256
+      collect_concurrency = 1
+      discover_concurrency = 1
+
+      vm_metric_exclude = ["*"]
+      host_metric_exclude = ["*"]
+
+      cluster_metric_include = ["*"]
+      datastore_metric_include = ["*"]
+      datacenter_metric_include = ["*"]
+
     [[outputs.prometheus_client]]
       listen = ":9273"    
       expiration_interval = "60s"
