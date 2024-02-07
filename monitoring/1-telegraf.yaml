@@ -121,9 +121,11 @@ spec:
   selector:
     app: telegraf
   ports:
-    - protocol: TCP
+    - name: realtime
+      protocol: TCP
       port: 9273
       targetPort: 9273
-    - protocol: TCP
+    - name: historical
+      protocol: TCP
       port: 9274
       targetPort: 9274
