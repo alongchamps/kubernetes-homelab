@@ -5,9 +5,10 @@ metadata:
   namespace: homelab-monitoring
   name: telegraf-realtime-config-map
 data:
-  telegraf-realtime.conf: |+
+  telegraf-realtime.conf: |
     [[inputs.vsphere]]
-      interval = "60s"
+      alias = "vsphere-realtime"
+      interval = "20s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
       insecure_skip_verify = true
       username = "$VSPHERE_USER"
@@ -37,8 +38,9 @@ metadata:
   namespace: homelab-monitoring
   name: telegraf-historical-config-map
 data:
-  telegraf-historical.conf: |+
+  telegraf-historical.conf: |
     [[inputs.vsphere]]
+      alias = "vsphere-historical"
       interval = "300s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
       insecure_skip_verify = true
@@ -80,7 +82,7 @@ spec:
         app: telegraf
     spec:
       containers:
-        - image: telegraf:latest
+        - image: telegraf:v1.28.1
           name: telegraf
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.d/telegraf-realtime.conf
