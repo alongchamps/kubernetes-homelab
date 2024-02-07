@@ -82,7 +82,7 @@ spec:
         app: telegraf
     spec:
       containers:
-        - image: telegraf:v1.28.1
+        - image: telegraf:1.28.1
           name: telegraf
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.d/telegraf-realtime.conf
