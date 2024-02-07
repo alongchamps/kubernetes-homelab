@@ -55,7 +55,7 @@ data:
 
       vm_metric_exclude = ["*"]
       host_metric_exclude = ["*"]
-      datastore_metric_exclude = ["*"]
+      datastore_metric_include = ["*"]
       datacenter_metric_exclude = ["*"]
       cluster_metric_exclude = ["*"]
       vsan_metric_exclude = [ "*" ]
