@@ -3,9 +3,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: homelab-monitoring
-  name: telegraf-config-map
+  name: telegraf-realtime-config-map
 data:
-  telegraf.conf: |+
+  telegraf-realtime.conf: |+
     [[inputs.vsphere]]
       interval = "60s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
@@ -24,6 +24,20 @@ data:
       datastore_metric_exclude = ["*"]
       datacenter_metric_exclude = ["*"]
 
+    [[outputs.prometheus_client]]
+      listen = ":9273"    
+      # expiration_interval = "120s"
+
+      metric_buffer_limit = 1000
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: homelab-monitoring
+  name: telegraf-historical-config-map
+data:
+  telegraf-historical.conf: |+
     [[inputs.vsphere]]
       interval = "300s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
@@ -43,13 +57,10 @@ data:
       datacenter_metric_include = ["*"]
 
     [[outputs.prometheus_client]]
-      listen = ":9273"    
-      # expiration_interval = "120s"
+      listen = ":9274"    
+      expiration_interval = "120s"
 
       metric_buffer_limit = 1000
-
-      ## Export metric collection time.
-      export_timestamp = true
 
 # deploy the container itself
 ---
@@ -72,9 +83,13 @@ spec:
         - image: telegraf:latest
           name: telegraf
           volumeMounts:
-            - mountPath: /etc/telegraf/telegraf.conf
-              name: telegraf-config-map
-              subPath: telegraf.conf
+            - mountPath: /etc/telegraf/telegraf.d/telegraf-realtime.conf
+              name: telegraf-realtime-config-map
+              subPath: telegraf-realtime.conf
+              readOnly: true
+            - mountPath: /etc/telegraf/telegraf.d/telegraf-historical.conf
+              name: telegraf-historical-config-map
+              subPath: telegraf-historical.conf
               readOnly: true
           env:
             - name: VSPHERE_USER
@@ -88,9 +103,12 @@ spec:
                   name: telegraf-secrets
                   key: password.txt
       volumes:
-        - name: telegraf-config-map
+        - name: telegraf-realtime-config-map
           configMap:
-            name: telegraf-config-map
+            name: telegraf-realtime-config-map
+        - name: telegraf-historical-config-map
+          configMap:
+            name: telegraf-historical-config-map
 
 #expose a service in k8s so Prometheus can reach Telegraf
 ---
@@ -106,3 +124,6 @@ spec:
     - protocol: TCP
       port: 9273
       targetPort: 9273
+    - protocol: TCP
+      port: 9274
+      targetPort: 9274

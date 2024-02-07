@@ -10,9 +10,12 @@ data:
       scrape_interval:     30s
       evaluation_interval: 15s
     scrape_configs:
-      - job_name: 'telegraf'
+      - job_name: 'telegraf-realtime'
         static_configs:
         - targets: ['telegraf-service:9273']
+      - job_name: 'telegraf-historical'
+        static_configs:
+        - targets: ['telegraf-service:9274']
 
 ---
 apiVersion: v1
