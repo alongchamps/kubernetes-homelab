@@ -8,7 +8,7 @@ data:
   telegraf-realtime.conf: |
     [[inputs.vsphere]]
       alias = "vsphere-realtime"
-      interval = "20s"
+      interval = "60s"
       vcenters = [ "https://vcsa.homelab/sdk" ]
       insecure_skip_verify = true
       username = "$VSPHERE_USER"
@@ -24,6 +24,8 @@ data:
       cluster_metric_exclude = ["*"]
       datastore_metric_exclude = ["*"]
       datacenter_metric_exclude = ["*"]
+      resource_pool_metric_exclude = ["*"]
+      vsan_metric_exclude = ["*"]
 
     [[outputs.prometheus_client]]
       listen = ":9273"    
@@ -57,6 +59,8 @@ data:
       cluster_metric_include = ["*"]
       datastore_metric_include = ["*"]
       datacenter_metric_include = ["*"]
+      resource_pool_metric_exclude = ["*"]
+      vsan_metric_exclude = ["*"]
 
     [[outputs.prometheus_client]]
       listen = ":9274"    
@@ -82,7 +86,7 @@ spec:
         app: telegraf
     spec:
       containers:
-        - image: telegraf:1.28.1
+        - image: telegraf:1.28.5
           name: telegraf
           volumeMounts:
             - mountPath: /etc/telegraf/telegraf.d/telegraf-realtime.conf
