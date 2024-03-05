@@ -33,7 +33,7 @@ spec:
     - ReadWriteOnce
   mountOptions:
     - hard
-    - nfsvers=4.1
+    - nfsvers=3
   nfs:
     path: /volume1/kubernetes
     server: synology.local
