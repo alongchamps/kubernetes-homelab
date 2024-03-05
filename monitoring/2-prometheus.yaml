@@ -26,11 +26,17 @@ metadata:
 spec:
   capacity:
     storage: 1Gi
-  storageClassName: local-storage
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
   accessModes:
     - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data"
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /volume1/kubernetes
+    server: synology.local
 
 ---
 apiVersion: apps/v1
