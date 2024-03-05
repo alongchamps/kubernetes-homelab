@@ -28,7 +28,7 @@ spec:
     storage: 1Gi
   volumeMode: Filesystem
   persistentVolumeReclaimPolicy: Recycle
-  storageClassName: nfs
+  storageClassName: synology-nfs
   accessModes:
     - ReadWriteOnce
   mountOptions:
@@ -92,7 +92,7 @@ spec:
       resources:
         requests:
           storage: 1Gi
-      storageClassName: "nfs"
+      storageClassName: "synology-nfs"
 
 ---
 apiVersion: v1
