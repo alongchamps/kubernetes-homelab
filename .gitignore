@@ -1,13 +1,12 @@
+cluster/**
+ansible/**
+kube-files/**
 notes.txt
 kube.yaml
 kube.config
 .vscode/**
-hosts.yml
-kube-files/**
 terraform.tfstate*
 tooksDeployPkg.log
 opentofu/vmware/kubernetes/.terraform/**
-ansible/**
 terraform.tfvars
-cluster/storage-class.yaml
 .terraform.lock.hcl
