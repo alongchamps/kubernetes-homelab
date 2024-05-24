@@ -17,3 +17,6 @@ metadata:
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+parameters:
+  server: synology.local
+  path: /volume1/kubernetes

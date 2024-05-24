@@ -1,0 +1,35 @@
+# rename this file to terraform.tfvars and fill in values accordingly
+
+# this password is for your VMware vCenter account
+vsphere_password = "VMware1!"
+
+# this is the SSH/sudo password for your VMs
+vm_password = "hunter2"
+
+kubes_control_plane = {
+    k-control-plane-1 = {
+      vm_name = "k-control-plane-1"
+      vm_ip = "10.0.0.a"
+      datastore = "datastore1"
+    }
+    k-control-plane-2 = {
+      vm_name = "k-control-plane-2"
+      vm_ip = "10.0.0.b"
+      datastore = "datastore2"
+    } 
+    k-control-plane-3 = {
+      vm_name = "k-control-plane-3"
+      vm_ip = "10.0.0.c"
+      datastore = "datastore3"
+    }
+    kworker1 = {
+      vm_name = "kworker1"
+      vm_ip = "10.0.0.d"
+      datastore = "datastore4"
+    }
+    kworker2 = {
+      vm_name = "kworker2"
+      vm_ip = "10.0.0.e"
+      datastore = "datastore5"
+    }
+  }
