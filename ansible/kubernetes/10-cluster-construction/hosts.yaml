@@ -1,0 +1,15 @@
+all:
+  children:
+    controlplane:
+      children:
+        primary:
+          hosts:
+            k-control-plane-1.homelab:
+        secondaries:
+          hosts:
+            k-control-plane-2.homelab:
+            k-control-plane-3.homelab:
+    workers:
+      hosts:
+        kworker1.homelab:
+        kworker2.homelab:

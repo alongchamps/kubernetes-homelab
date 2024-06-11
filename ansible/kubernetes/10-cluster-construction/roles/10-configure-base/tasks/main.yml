@@ -1,0 +1,140 @@
+---
+# tasks file for setup-node
+# This will install packages and apply various system configs necessary for Kubernetes nodes.
+
+- name: clean apt
+  ansible.builtin.apt:
+    clean: true
+  become: true
+  become_method: sudo
+
+- name: update apt
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  become_method: sudo
+
+- name: Install a list of packages
+  ansible.builtin.apt:
+    pkg:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gpg 
+    - tree
+    - containernetworking-plugins
+    - ipset
+    - ipvsadm
+  become: true
+  become_method: sudo
+
+- name: add kubernetes repo key
+  ansible.builtin.get_url:
+    url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+    dest: /etc/apt/keyrings/kubernetes-apt.asc
+    mode: "0644"
+  become: true
+  become_method: sudo
+
+- name: add kubernetes repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+    state: present
+    update_cache: yes
+  become: true
+  become_method: sudo
+
+- name: update apt
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  become_method: sudo
+
+- name: Install a list of packages
+  ansible.builtin.apt:
+    pkg:
+    - kubelet
+    - kubeadm
+    - kubectl
+  become: true
+  become_method: sudo
+
+# I ran into an issue where Ansible was working too quickly for 
+# ansible.builtin.dpkg_selections so let's take a 5-second nap
+- name: wait 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Hold kubernetes packages at their current version
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+  become: true
+  become_method: sudo
+
+- name: enable kubelet via systemctl
+  ansible.builtin.systemd_service:
+    name: kubelet
+    enabled: true
+  become: true
+  become_method: sudo
+
+- name: install containerd
+  ansible.builtin.apt:
+    pkg: 
+    - containerd
+  become: true
+  become_method: sudo
+
+- name: enable IPv4 forwarding
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.ipv4.ip_forward = 1
+  become: true
+  become_method: sudo
+
+- name: enable IPv4 forwarding in /etc/sysctl.conf
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    line: "{{ item }}"
+  become: true
+  become_method: sudo
+  loop:
+    - "net.ipv4.ip_forward=1"
+    - "net.bridge.bridge-nf-call-iptables=1"
+
+- name: Disable swap in /etc/fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: "swap.img"
+    state: absent
+    backup: yes
+  become: true
+  become_method: sudo
+
+# these two calls setup the default containerd config file
+# credit to: https://www.itzgeek.com/how-tos/linux/ubuntu-how-tos/install-containerd-on-ubuntu-22-04.html
+- name: mkdir /etc/containerd
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+  become: true
+
+- name: save default containerd config to /etc/containerd/config.toml
+  ansible.builtin.shell: "containerd config default | tee /etc/containerd/config.toml"
+  become: true
+
+# set CRI to use SystemdCgroup, which is false by default
+# settings take effect after restart, which is handled later
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd-systemd
+- name: edit SystemdCgroup to be true in /etc/containerd/config.toml
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: 'SystemdCgroup = false'
+    replace: 'SystemdCgroup = true'
+  become: true
