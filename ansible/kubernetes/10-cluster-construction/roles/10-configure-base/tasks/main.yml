@@ -8,26 +8,6 @@
   become: true
   become_method: sudo
 
-- name: update apt
-  ansible.builtin.apt:
-    update_cache: true
-  become: true
-  become_method: sudo
-
-- name: Install a list of packages
-  ansible.builtin.apt:
-    pkg:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gpg 
-    - tree
-    - containernetworking-plugins
-    - ipset
-    - ipvsadm
-  become: true
-  become_method: sudo
-
 - name: add kubernetes repo key
   ansible.builtin.get_url:
     url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
@@ -53,9 +33,18 @@
 - name: Install a list of packages
   ansible.builtin.apt:
     pkg:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gpg 
+    - tree
+    - containernetworking-plugins
+    - ipset
+    - ipvsadm
     - kubelet
     - kubeadm
     - kubectl
+    - containerd
   become: true
   become_method: sudo
 
@@ -80,13 +69,6 @@
   ansible.builtin.systemd_service:
     name: kubelet
     enabled: true
-  become: true
-  become_method: sudo
-
-- name: install containerd
-  ansible.builtin.apt:
-    pkg: 
-    - containerd
   become: true
   become_method: sudo
 
