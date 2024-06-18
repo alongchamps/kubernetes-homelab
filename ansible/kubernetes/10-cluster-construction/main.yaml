@@ -1,3 +1,7 @@
+# invocation:
+# ssh-keyscan -H k-control-plane-1.homelab k-control-plane-2.homelab k-control-plane-3.homelab kworker1.homelab kworker2.homelab >> ~/.ssh/known_hosts
+# ansible-playbook -i hosts.yaml --private-key ~/.ssh/path/to/private/key -u packer --ask-become-pass main.yaml
+# ansible-playbook -i hosts.yaml --private-key  ~/.ssh/id_ed25519 -u packer --ask-become-pass main.yaml
 
 - hosts: all
   roles:
@@ -12,7 +16,7 @@
 - hosts: primary 
   tasks:
     - name: initialize kubernetes with the necessary args
-      ansible.builtin.shell: "kubeadm init --control-plane-endpoint k-control-plane-1.homelab --upload-certs --pod-network-cidr 10.0.16.0/20 --service-cidr 10.0.15.0/24 --service-dns-domain kubes.homelab"
+      ansible.builtin.shell: "kubeadm init --control-plane-endpoint k-control-plane-1.homelab --upload-certs --pod-network-cidr 10.0.16.0/20 --service-cidr 10.0.15.0/24"
       become: true
       register: k8s_init_output
 
@@ -65,16 +69,24 @@
   tasks:
     - name: Print all nodes
       ansible.builtin.shell: "kubectl get nodes"
+      register: cluster_output
+  
+    - name: print cluster_output
+      ansible.builtin.debug:
+        var: cluster_output
 
-# - hosts: primary
-#   roles:
-#     - "20-configure-addons"
+- hosts: primary
+  roles:
+    - "20-configure-addons"
 
-#   tasks:
-#     - name: copy over grafana file
-#       ansible.builtin.copy:
-#         src: ../monitoring/20-grafana.yaml
-#         dest: 20-grafana.yaml
+  tasks:
+    - name: copy over grafana file
+      ansible.builtin.copy:
+        src: ../20-monitoring/10-grafana.yaml
+        dest: 20-grafana.yaml
     
-#     - name: apply grafana
-#       ansible.builtin.shell: "kubectl apply -f 20-grafana.yaml"
+    - name: apply grafana
+      ansible.builtin.shell: "kubectl apply -f 20-grafana.yaml"
+
+    - name: wait for Grafana to become ready
+      ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace monitoring-prod pod --all"

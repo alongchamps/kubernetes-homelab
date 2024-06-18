@@ -1,0 +1,54 @@
+# 1. Deploy Flannel as my CNI
+# 2. Deploy MetalLB to handle external IP addresses
+# 3. Deploy a CoreDNS conatiner that's available outside the k8s cluster
+# 4. Deploy an nginx ingress controller
+
+# If you're going to apply this script in your own environment, look at the
+# sample files in ../scripts/. You'll need to provide a dns.yaml file 
+# and networking.yaml file for this script to work.
+
+# Flannel
+- name: copy necessary files over
+  ansible.builtin.copy:
+    src: ../scripts/networking.yaml
+    dest: networking.yaml
+
+- name: apply networking.yaml script
+  ansible.builtin.shell: "kubectl apply -f networking.yaml"
+
+- name: wait for networking.yaml related containers to become ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace kube-flannel -l k8s-app=flannel pod --timeout 60s"
+
+# metal LB
+- name: apply metalLB custom resource definitions (CRDs)
+  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml"
+
+- name: wait for metallb related containers to become ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace metallb-system -l app=metallb pod --timeout 120s"
+
+- name: copy necessary files over
+  ansible.builtin.copy:
+    src: ../scripts/metallb.yaml
+    dest: metallb.yaml
+
+- name: apply MetalLB script to create IP ranges and ARP config
+  ansible.builtin.shell: "kubectl apply -f metallb.yaml"
+
+# DNS
+- name: copy necessary files over
+  ansible.builtin.copy:
+    src: ../scripts/dns.yaml
+    dest: dns.yaml
+
+- name: apply dns.yaml script
+  ansible.builtin.shell: "kubectl apply -f dns.yaml"
+
+- name: wait for dns.yaml related containers to become ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace kube-system -l k8s-app=excoredns pod --timeout 60s"
+
+# nginx ingress controller
+- name: apply nginx ingress controller
+  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml"
+
+- name: wait for nginx related containers to become ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace ingress-nginx -l app.kubernetes.io/component=controller pod --timeout 120s"

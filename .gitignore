@@ -1,6 +1,4 @@
 cluster-configurations/**
-ansible/kubernetes/monitoring/**
-ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/**
 
 kube-files/**
 notes.txt
@@ -13,3 +11,5 @@ opentofu/vmware/kubernetes/.terraform/**
 terraform.tfvars
 .terraform.lock.hcl
 ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/networking.yaml
+ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/dns.yaml
+ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/storage.yaml

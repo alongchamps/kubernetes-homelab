@@ -7,6 +7,7 @@
     clean: true
   become: true
   become_method: sudo
+  ignore_errors: true
 
 - name: add kubernetes repo key
   ansible.builtin.get_url:
@@ -30,6 +31,11 @@
   become: true
   become_method: sudo
 
+- name: wait 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
+
+# sometimes this ran too quickly so I added `retries: 2` with a 10 second delay
 - name: Install a list of packages
   ansible.builtin.apt:
     pkg:
@@ -50,20 +56,33 @@
 
 # I ran into an issue where Ansible was working too quickly for 
 # ansible.builtin.dpkg_selections so let's take a 5-second nap
-- name: wait 5 seconds
+- name: wait 15 seconds
   ansible.builtin.pause:
-    seconds: 5
+    seconds: 15
 
 - name: Hold kubernetes packages at their current version
   ansible.builtin.dpkg_selections:
-    name: "{{ item }}"
+    name:  "kubelet"
     selection: hold
-  loop:
-    - kubelet
-    - kubeadm
-    - kubectl
   become: true
   become_method: sudo
+  ignore_errors: true
+
+- name: Hold kubernetes packages at their current version
+  ansible.builtin.dpkg_selections:
+    name:  "kubeadm"
+    selection: hold
+  become: true
+  become_method: sudo
+  ignore_errors: true
+
+- name: Hold kubernetes packages at their current version
+  ansible.builtin.dpkg_selections:
+    name:  "kubectl"
+    selection: hold
+  become: true
+  become_method: sudo
+  ignore_errors: true
 
 - name: enable kubelet via systemctl
   ansible.builtin.systemd_service:

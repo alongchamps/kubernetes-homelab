@@ -1,0 +1,9 @@
+# I am using Flannel for my CNI and following their installation instructions
+# from here: https://github.com/flannel-io/flannel
+
+# If you want to use this file here, rename it to networking.yaml, paste in the
+# contents of kube-flannel.yml from above, edit your pod network range, and 
+# then my Ansible playbook wll apply it.
+
+# latest file taken from here on Sat Jun 1, 2024
+# https://github.com/flannel-io/flannel/blob/master/Documentation/kube-flannel.yml

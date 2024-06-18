@@ -1,0 +1,6 @@
+#From the project: https://github.com/ori-edge/k8s_gateway
+
+# I am using the script provided here: https://github.com/ori-edge/k8s_gateway/blob/master/examples/install-clusterwide.yml
+# to run my externally available DNS services. The only part
+# I'm changing is the ConfigMap where I set my domain next to k8s_gateway.
+# The main README in the landing page on the project has some more detail.

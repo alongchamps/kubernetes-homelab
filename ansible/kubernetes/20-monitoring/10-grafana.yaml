@@ -1,0 +1,81 @@
+# initialize monitoring namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-prod
+  labels:
+    name: monitoring-prod
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: monitoring-prod
+  labels:
+    app.kubernetes.io/name: grafana
+spec:
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        app.kubernetes.io/name: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SERVER_DOMAIN
+              value: "grafana.kubes.homelab"
+            - name: GF_SERVER_ROOT_URL
+              value: "https://grafana.kubes.homelab"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: monitoring-prod
+  labels:
+    app: grafana
+spec:
+  ports:
+    - port: 443
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: grafana
+  type: NodePort
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring-prod
+  labels:
+    app: grafana
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: grafana.kubes.homelab
+    http:
+      paths:
+      - path: /
+        pathType: "Prefix"
+        backend:
+          service:
+            name: grafana-service
+            port:
+              number: 443
