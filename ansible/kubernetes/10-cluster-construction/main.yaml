@@ -1,7 +1,5 @@
-# invocation:
-# ssh-keyscan -H k-control-plane-1.homelab k-control-plane-2.homelab k-control-plane-3.homelab kworker1.homelab kworker2.homelab >> ~/.ssh/known_hosts
+# To rescan SSH keys: ssh-keyscan -H k-control-plane-1.homelab k-control-plane-2.homelab k-control-plane-3.homelab kworker1.homelab kworker2.homelab >> ~/.ssh/known_hosts
 # ansible-playbook -i hosts.yaml --private-key ~/.ssh/path/to/private/key -u packer --ask-become-pass main.yaml
-# ansible-playbook -i hosts.yaml --private-key  ~/.ssh/id_ed25519 -u packer --ask-become-pass main.yaml
 
 - hosts: all
   roles:
