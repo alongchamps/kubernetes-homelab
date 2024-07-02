@@ -1,10 +1,26 @@
 # initialize monitoring namespace
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring-prod
   labels:
     name: monitoring-prod
+
+# grafana specific details
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: monitoring-prod
+  name: grafana-pvc
+spec:
+  storageClassName: synology-nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -41,6 +57,13 @@ spec:
               value: "grafana.kubes.homelab"
             - name: GF_SERVER_ROOT_URL
               value: "https://grafana.kubes.homelab"
+          volumeMounts:
+          - mountPath: /var/lib/grafana
+            name: grafana-pv
+      volumes:
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
 ---
 apiVersion: v1
 kind: Service

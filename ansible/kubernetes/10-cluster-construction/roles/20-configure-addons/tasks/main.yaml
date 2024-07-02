@@ -1,7 +1,8 @@
 # 1. Deploy Flannel as my CNI
 # 2. Deploy MetalLB to handle external IP addresses
-# 3. Deploy a CoreDNS conatiner that's available outside the k8s cluster
+# 3. Deploy a CoreDNS conatiner that's reachable from outside the k8s cluster
 # 4. Deploy an nginx ingress controller
+# 5. Configure an NFS CSI and set my Synology as the default storage provider
 
 # If you're going to apply this script in your own environment, look at the
 # sample files in ../scripts/. You'll need to provide a dns.yaml file 
@@ -52,3 +53,21 @@
 
 - name: wait for nginx related containers to become ready
   ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace ingress-nginx -l app.kubernetes.io/component=controller pod --timeout 120s"
+
+# storage configuration
+- name: install NFS CSI driver from Kubernetes' CSI project
+  ansible.builtin.shell: "curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/v4.7.0/deploy/install-driver.sh | bash -s v4.7.0 --"
+
+- name: wait for CSI NFS controller pod to get ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace kube-system -l app=csi-nfs-controller pod --timeout 120s"
+
+- name: wait for CSI NFS per-node pods to get ready
+  ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace kube-system -l app=csi-nfs-node pod --timeout 120s"
+
+- name: copy storage file over
+  ansible.builtin.copy:
+    src: ../scripts/storage.yaml
+    dest: storage.yaml
+
+- name: apply storage.yaml file
+  ansible.builtin.shell: "kubectl apply -f storage.yaml"

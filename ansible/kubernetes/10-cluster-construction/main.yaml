@@ -81,10 +81,10 @@
     - name: copy over grafana file
       ansible.builtin.copy:
         src: ../20-monitoring/10-grafana.yaml
-        dest: 20-grafana.yaml
+        dest: 10-grafana.yaml
     
     - name: apply grafana
-      ansible.builtin.shell: "kubectl apply -f 20-grafana.yaml"
+      ansible.builtin.shell: "kubectl apply -f 10-grafana.yaml"
 
     - name: wait for Grafana to become ready
       ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace monitoring-prod pod --all"

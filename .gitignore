@@ -12,4 +12,6 @@ terraform.tfvars
 .terraform.lock.hcl
 ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/networking.yaml
 ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/dns.yaml
-ansible/kubernetes/10-cluster-construction/roles/20-configure-addons/scripts/storage.yaml
+ansible/kubernetes/20-monitoring/1-namespace.yaml
+ansible/kubernetes/20-monitoring/20-prometheus.yaml
+ansible/kubernetes/20-monitoring/30-telegraf.yaml
