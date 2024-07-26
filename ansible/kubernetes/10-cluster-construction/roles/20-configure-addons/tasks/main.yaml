@@ -22,7 +22,7 @@
 
 # metal LB
 - name: apply metalLB custom resource definitions (CRDs)
-  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml"
+  ansible.builtin.shell: "kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.7/config/manifests/metallb-native.yaml"
 
 - name: wait for metallb related containers to become ready
   ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace metallb-system -l app=metallb pod --timeout 120s"

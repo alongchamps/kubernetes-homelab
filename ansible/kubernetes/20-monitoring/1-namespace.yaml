@@ -1,0 +1,7 @@
+# initialize monitoring namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-prod
+  labels:
+    name: monitoring-prod

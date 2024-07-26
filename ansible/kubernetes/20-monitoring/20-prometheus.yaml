@@ -1,0 +1,108 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: monitoring-prod
+  name: prom-configmap
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    scrape_configs:
+      - job_name: 'vcsa.homelab-metrics'
+        static_configs:
+        - targets: ['telegraf-service']
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: monitoring-prod
+  name: prometheus-pvc
+spec:
+  storageClassName: synology-nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: monitoring-prod
+  labels:
+    app.kubernetes.io/name: prometheus
+spec:
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  template:
+    metadata:
+      name: prometheus
+      labels:
+        app.kubernetes.io/name: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+          args:
+            - '--storage.tsdb.retention.size=45GB'
+            - '--storage.tsdb.path=/mnt/prom-tsdb'
+            - '--config.file=/etc/prometheus/prometheus.yml'
+          volumeMounts:
+          - mountPath: /mnt/prom-tsdb
+            name: prometheus-pv
+          - mountPath: /etc/prometheus
+            name: prom-configmap-vol
+      volumes:
+        - name: prometheus-pv
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+        - name: prom-configmap-vol
+          configMap:
+            name: prom-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: monitoring-prod
+  labels:
+    app: prometheus
+spec:
+  ports:
+    - port: 443
+      targetPort: 9090
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: prometheus
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus
+  namespace: monitoring-prod
+  labels:
+    app: prometheus
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: prometheus.kubes.homelab
+    http:
+      paths:
+      - path: /
+        pathType: "Prefix"
+        backend:
+          service:
+            name: prometheus-service
+            port:
+              number: 443

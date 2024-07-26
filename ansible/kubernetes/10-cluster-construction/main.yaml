@@ -86,5 +86,10 @@
     - name: apply grafana
       ansible.builtin.shell: "kubectl apply -f 10-grafana.yaml"
 
-    - name: wait for Grafana to become ready
-      ansible.builtin.shell: "kubectl wait --for=condition=Ready --namespace monitoring-prod pod --all"
+    - name: copy over prometheus file
+      ansible.builtin.copy:
+        src: ../20-monitoring/20-prometheus.yaml
+        dest: 20-prometheus.yaml
+    
+    - name: apply file
+      ansible.builtin.shell: "kubectl apply -f 20-prometheus.yaml"

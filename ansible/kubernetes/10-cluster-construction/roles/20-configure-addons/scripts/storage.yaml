@@ -5,8 +5,11 @@ metadata:
   name: synology-nfs
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: kubernetes.io/no-provisioner
+provisioner: nfs.csi.k8s.io
 volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+mountOptions:
+  - nfsvers=4.1
 parameters:
   server: synology.homelab
-  path: /volume1/kubernetes
+  share: /volume1/kubernetes
