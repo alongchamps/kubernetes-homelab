@@ -1,0 +1,41 @@
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: flannel-networking
+value: 10000
+globalDefault: false
+description: "Priority class to help flannel pods start in the right order. On purpose, this is higher than the metallb class."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: load-balancer
+value: 9000
+globalDefault: false
+description: "Priority class to help metallb pods start in the right order. On purpose, this is lower than the flannel class."
+
+
+# kubectl patch daemonset/kube-flannel-ds --patch-file priority-flannel.yaml -n kube-flannel
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-flannel-ds
+  namespace: kube-flannel
+spec:
+  template:
+    spec:
+      priorityClassName: flannel-networking
+
+# kubectl patch daemonset/speaker --patch-file priority-metallb.yaml -n metallb-system
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: speaker
+  namespace: metallb-system
+spec:
+  template:
+    spec:
+      priorityClassName: load-balancer

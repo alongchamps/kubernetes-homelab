@@ -8,6 +8,14 @@
 # sample files in ../scripts/. You'll need to provide a dns.yaml file 
 # and networking.yaml file for this script to work.
 
+- name: copy necessary files over - priority classes
+  ansible.builtin.copy:
+    src: ../scripts/priorities.yaml
+    dest: priorities.yaml
+
+- name: apply priorities list
+  ansible.builtin.shell: "kubectl apply -f priorities.yaml"
+
 # Flannel
 - name: copy necessary files over
   ansible.builtin.copy:
